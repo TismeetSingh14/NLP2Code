@@ -115,7 +115,7 @@ def generate_model_name(args):
     
     model_name = '{}_model{}{}_combined_training={}_seed={}{}{}{}{}.pth'.format(
         model_first_token,
-        extention,
+        extension,
         str(args.percentage) if args.small_dataset is True else '',
         args.combined_training,
         args.seed,
