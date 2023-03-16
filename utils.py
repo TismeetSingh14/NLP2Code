@@ -83,10 +83,10 @@ def compute_loss(args, data, model, target_input = None, no_context_update = Fal
         target_input_model = target_input
     logits, target, choices, labels, hidden = model(
         data, 
-        target_input = target_input_model
+        target_input = target_input_model,
         no_context_update = no_context_update,
         encoder_output_saved = encoder_output_saved
-        )
+    )
     
     if args.pointer_network:
         labels = labels[:, 1:target['input_ids'].shape[1]].to(args.device)
@@ -98,7 +98,7 @@ def compute_loss(args, data, model, target_input = None, no_context_update = Fal
         loss = None
     
     else:
-        loss = LabelSmoothingCrossEntropy(torch.transpose(logits, 1, 2)), labels, args,choices['attention_mask'] if args.pointer_network else None)
+        loss = LabelSmoothingCrossEntropy(torch.transpose(logits, 1, 2)), labels, args,choices['attention_mask'] if args.pointer_network else None
         loss = (loss*target['attention_mask'][:, 1:])
     return loss, logits, choices
 
@@ -193,4 +193,47 @@ def my_detokenize(tokens, token_dict, raise_error = False):
     literal = []
     try:
         start_idx, end_idx = find_sub_sequence(token_dict['words'], tokens)
-        for 
+        for idx in range(start_idx, end_idx):
+            literal.extend([token_dict['gloss'][idx], token_dict['after'][idx]])
+
+        val = ''.join(literal).strip()
+
+    except IndexError: 
+        if raise_error:
+            raise IndexError('cannot find the entry for [%s] in the token dict [%s]' % (' '.join(tokens),' '.join(token_dict['words'])))
+        
+        for token in tokens:
+            match = False
+            for word, gloss, after in zip(token_dict['words'], token_dict['gloss'], token_dict['after']):
+                if token == word:
+                    literal.extend([gloss, after])
+                    match = True
+                    break
+
+                if not match and raise_error:
+                    raise IndexError('cannot find the entry for [%s] in the token dict [%s]' % (' '.join(tokens),' '.join(token_dict['words'])))
+                
+                if not match: 
+                    literal.extend(token)
+                
+            val = ''.join(literal).strip()
+
+        return val
+    
+def detokenize_query(query, tokenized_question, table_header_type):
+    detokenized_conds = []
+    for i, (col, op, val) in enumerate(query.conditions):
+        val_tokens = val.split(' ')
+        detokenized_cond_val = my_detokenize(val_tokens, tokenized_question)
+
+        if table_header_type[col] == 'real' and not isinstance(detokenized_cond_val, (int, float)):
+            if ',' not in detokenized_cond_val:
+                try:
+                    detokenized_cond_val = float(parse_decimal(detokenized_cond_val))
+                except NumberFormatError as e:
+                    try:
+                        detokenized_cond_val = float(num_re.findall(detokenized_cond_val)[0])
+                    except: pass
+        detokenized_conds.append((col, op, detokenized_cond_val))
+    detokenized_query = Query(sel_index=query.sel_index, agg_index=query.agg_index, conditions=detokenized_conds)
+    return detokenize_query
