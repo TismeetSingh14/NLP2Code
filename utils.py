@@ -98,7 +98,7 @@ def compute_loss(args, data, model, target_input = None, no_context_update = Fal
         loss = None
     
     else:
-        loss = LabelSmoothingCrossEntropy(torch.transpose(logits, 1, 2)), labels, args,choices['attention_mask'] if args.pointer_network else None
+        loss = LabelSmoothingCrossEntropy(torch.transpose(logits, 1, 2), labels, args,choices['attention_mask'] if args.pointer_network else None)
         loss = (loss*target['attention_mask'][:, 1:])
     return loss, logits, choices
 

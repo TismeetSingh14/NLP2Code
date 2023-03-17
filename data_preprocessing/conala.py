@@ -22,7 +22,7 @@ class Conala(MonolingualPython):
         self.threshold = {'train': 100,
                           'test': 100,
                           'dev': 100}
-        super(Conala, self).__init__('Conala', split, tokenizer, args, monolingual)
+        super(Conala, self).__init__('conala', split, tokenizer, args, monolingual)
 
     @staticmethod
     def decanonicalize_code(code, slot_map):

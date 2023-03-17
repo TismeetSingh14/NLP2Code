@@ -40,7 +40,7 @@ class MyTransformerDecoderLayer(TransformerDecoderLayer):
                 no_context_update = False, no_memory = False):
         
         tgt2 = self.self_attn(tgt, tgt, tgt, attn_mask = tgt_mask,
-                               tgt_key_padding_mask = tgt_key_padding_mask)[0]
+                               key_padding_mask = tgt_key_padding_mask)[0]
         
         tgt = tgt + self.dropout1(tgt2)
         tgt = self.norm1(tgt)

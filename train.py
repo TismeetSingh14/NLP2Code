@@ -24,12 +24,12 @@ dataset_classes = {'django':Django,
 
 def load_dataset(args, tokenizer):
     splits = ['train', 'dev', 'test']
-    dataset = []
+    datasets = []
     for split in splits:
         dataset = dataset_classes[args.dataset_name](args.dataset_name, split, tokenizer,args)
-        dataset.append(dataset)
+        datasets.append(dataset)
 
-    return (*dataset,) if len(dataset) > 1 else dataset
+    return (*datasets,) if len(datasets) > 1 else dataset
 
 def preprocess_batch(data):
     data_intents = [d['intent'] for d in data]
@@ -37,8 +37,8 @@ def preprocess_batch(data):
     keys = ['input_ids', 'attention_mask', 'token_type_ids']
     source_dict = {key: pad_sequence([torch.tensor(d[key]) for d in data_intents], batch_first=True, padding_value=0)
                    for key in keys}
-    target_dict = {keys:pad_sequence([torch.tensor(d[key]) for d in data_snippets], batch_first=True, padding_value=0)
-                   for key in keys}
+    target_dict = {key: pad_sequence([torch.tensor(d[key]) for d in data_snippets], batch_first=True, padding_value=0)
+                                for key in keys}
     extra_info = {}
     if args.pointer_network:
         source_dict['source_label'] = pad_sequence([torch.tensor(d['source_label']) for d in data_intents], batch_first=True, padding_value=0)
@@ -52,11 +52,11 @@ def print_dataset_length_info(train_dataset):
     length = []
     for i in range(len(train_dataset)):
         length.append(len(train_dataset[i]['intent']['input_ids']))
-        print('min', min(length))
-        print('max', max(length))
-        length = np.array(length)
-        print('std', np.std(length))
-        print('mean', np.mean(length))
+    print('min', min(length))
+    print('max', max(length))
+    length = np.array(length)
+    print('std', np.std(length))
+    print('mean', np.mean(length))
 
 def train(args):
     if torch.cuda.is_available():
@@ -116,7 +116,7 @@ def train(args):
         print(model.tokenizer.decode(copy_dataset[0]['snippet']['input_ids']))
 
     resume_file = os.path.join(args.save_dir, 'resume.pth')
-    if not args.just_evluate:
+    if not args.just_evaluate:
         if os.path.exists(resume_file):
             print('resume is loaded')
             checkpoint = torch.load(resume_file)

@@ -11,7 +11,7 @@ def greedy_search(args, model, data, prediction_length):
         encoder_outputs = model(data, target_input=None,no_context_update=False,return_encoder_output=True)
     for i in range(1,prediction_length):
         target_input = ({k:v[:,:i+1] for k,v in generated_seq.items()})
-        with torch.cuda.amp.autocats():
+        with torch.cuda.amp.autocast():
             _,logits,choices = compute_loss(args,data,model,target_input=target_input,encoder_output_saved=encoder_outputs)
         logits = logits[:,i-1]
         selected_indices = torch.argmax(logits,dim=-1,keepdim=True)

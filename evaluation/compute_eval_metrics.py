@@ -20,7 +20,7 @@ def compute_metric(translation_corpus, dataset_name, split, tokenizer = None, se
         dataset_object = json.loads(dataset_file.read())
     with open('data/{}/{}_order.json'.format(dataset_name, split), 'rb') as f:
         indices = pickle.load(f)
-    dataset_object = np.array(dataset_object)[indices].toList()
+    dataset_object = np.array(dataset_object)[indices].tolist()
     # if dataset_name == 'wikisql':
     #     annotated_dataset_file = os.path.join('data/{}/{}_annotated.jsonl'.format(dataset_name, split))
     #     annotated_dataset_object = open(annotated_dataset_file, 'r').readlines()
@@ -39,9 +39,9 @@ def compute_metric(translation_corpus, dataset_name, split, tokenizer = None, se
         reference = dataset_object[index]['snippet'].lower()
         # if args.datset_name == 'wikisql':
         #     annotated_data = json.loads(annotated_dataset_object[index])
-        tokenized_source = tokenizer.encode(reference,padding=True,truncation=True,return_tensor='pt')
+        tokenized_source = tokenizer.encode(reference,padding=True,truncation=True,return_tensors='pt')[0]
         if isinstance(translation,dict):
-            if is_equal(translation['token'],tokenized_source.to('cude')):
+            if is_equal(translation['token'],tokenized_source.to('cuda')):
                 exac_match_acc += 1
             else:
                 mistakes.append((index,translation['str']))
