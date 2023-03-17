@@ -151,7 +151,7 @@ def train(args):
                 if args.copy_bt:
                     del copy_data
                 loss = loss.mean()
-                averaged_loss += loss.item()*len(data['source'['input_ids']])
+                averaged_loss += loss.item()*len(data['source']['input_ids'])
                 encoder_optimizer.zero_grad()
                 decoder_optimizer.zero_grad()
                 loss.backward()

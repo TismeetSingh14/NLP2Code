@@ -73,7 +73,7 @@ class Model(nn.Module):
         if return_encoder_output:
             return encoder_output
 
-        target_embedding = self.myembedding(target['input_ids'[:,:-1]])
+        target_embedding = self.myembedding(target['input_ids'][:,:-1])
         target_length = target['input_ids'].shape[1]
 
         prediction = self.decoder(
