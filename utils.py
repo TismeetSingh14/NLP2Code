@@ -1,7 +1,7 @@
 import torch.nn.functional as F
 import torch
 from babel.numbers import parse_decimal, NumberFormatError
-from dataset_preprocessing.wikisql.lib.query import Query
+# from dataset_preprocessing.wikisql.lib.query import Query
 import re
 import unicodedata
 
@@ -109,7 +109,7 @@ def generate_model_name(args):
         if args.python:
             model_first_token = 'python'
         elif args.dataset_name == 'magic':
-            model_first_joken = 'java'
+            model_first_token = 'java'
         else:
             model_first_token = 'sql'
     
@@ -220,20 +220,20 @@ def my_detokenize(tokens, token_dict, raise_error = False):
 
         return val
     
-def detokenize_query(query, tokenized_question, table_header_type):
-    detokenized_conds = []
-    for i, (col, op, val) in enumerate(query.conditions):
-        val_tokens = val.split(' ')
-        detokenized_cond_val = my_detokenize(val_tokens, tokenized_question)
+# def detokenize_query(query, tokenized_question, table_header_type):
+#     detokenized_conds = []
+#     for i, (col, op, val) in enumerate(query.conditions):
+#         val_tokens = val.split(' ')
+#         detokenized_cond_val = my_detokenize(val_tokens, tokenized_question)
 
-        if table_header_type[col] == 'real' and not isinstance(detokenized_cond_val, (int, float)):
-            if ',' not in detokenized_cond_val:
-                try:
-                    detokenized_cond_val = float(parse_decimal(detokenized_cond_val))
-                except NumberFormatError as e:
-                    try:
-                        detokenized_cond_val = float(num_re.findall(detokenized_cond_val)[0])
-                    except: pass
-        detokenized_conds.append((col, op, detokenized_cond_val))
-    detokenized_query = Query(sel_index=query.sel_index, agg_index=query.agg_index, conditions=detokenized_conds)
-    return detokenize_query
+#         if table_header_type[col] == 'real' and not isinstance(detokenized_cond_val, (int, float)):
+#             if ',' not in detokenized_cond_val:
+#                 try:
+#                     detokenized_cond_val = float(parse_decimal(detokenized_cond_val))
+#                 except NumberFormatError as e:
+#                     try:
+#                         detokenized_cond_val = float(num_re.findall(detokenized_cond_val)[0])
+#                     except: pass
+#         detokenized_conds.append((col, op, detokenized_cond_val))
+#     detokenized_query = Query(sel_index=query.sel_index, agg_index=query.agg_index, conditions=detokenized_conds)
+#     return detokenize_query
