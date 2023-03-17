@@ -12,11 +12,11 @@ from evaluation.evaluation import evaluate
 from evaluation.compute_eval_metrics import compute_metric
 from utils import compute_loss, get_next_batch
 import os
-from evaluation.evaluation import gnerate_hypothesis
+from evaluation.evaluation import generate_hypothesis
 from utils import generate_model_name
 from torch.nn.utils.rnn import pad_sequence
-from dataset_preprocesssing.django import Django
-from dataset_preprocesssing.conala import Conala
+from data_preprocessing.django import Django
+from data_preprocessing.conala import Conala
 
 dataset_classes = {'django':Django,
                    'conala':Conala,
@@ -214,7 +214,7 @@ def train(args):
                 if os.path.exists(file):
                     generated_set = pickle.load(open(file,'rb'))
                 else:
-                    generated_set = generated_hypothesis(args,loader[split],model,search=search)
+                    generated_set = generate_hypothesis(args,loader[split],model,search=search)
                     with open(file,'wb') as f:
                         pickle.dump(generated_set,f)
                 metrics = compute_metric(generated_set,args.dataset_name,split=split,tokenizer=model.tokenizer, args=args)
@@ -301,25 +301,25 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.dataset_name == 'django' or args.dataset_name == 'conala':
         args.python = True
-    elif args.dataset_name == 'wikisql':
-        if not args.translate_backward:
-            args.pointer_network = True
-        args.beam_num = 5
-        args.text_batch_size = 100
-        args.valid_batch_size = 100
-        args.eval_interval = 5
-        args.beam_search_base = 0
-        args.beam_search_alpha = 1
-        args.early_stopping_epochs = args.early_stopping_epochs//args.eval_interval+1
-        if args.small_dataset is False:
-            args_epoch = 10
-        else:
-            args.epochs = 100
+    # elif args.dataset_name == 'wikisql':
+    #     if not args.translate_backward:
+    #         args.pointer_network = True
+    #     args.beam_num = 5
+    #     args.text_batch_size = 100
+    #     args.valid_batch_size = 100
+    #     args.eval_interval = 5
+    #     args.beam_search_base = 0
+    #     args.beam_search_alpha = 1
+    #     args.early_stopping_epochs = args.early_stopping_epochs//args.eval_interval+1
+    #     if args.small_dataset is False:
+    #         args_epoch = 10
+    #     else:
+    #         args.epochs = 100
     elif args.dataset_name == 'magic':
         args.eval_interval = 5
     elif args.dataset_name in ['atis', 'geo', 'imdb', 'scholar', 'advising', 'academic']:
         args.beam_search_base = 0
-        args.beam_searhc_alpha = 1
+        args.beam_search_alpha = 1
     else:
         raise Exception("Wrong Dataset Name!")
     args.no_encoder = False
