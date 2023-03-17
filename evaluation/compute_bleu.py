@@ -1,5 +1,5 @@
 import re
-from dataset_preprocessing.conala import Conala
+from data_preprocessing.conala import Conala
 from nltk.translate.bleu_score import SmoothingFunction
 import nltk
 import collections
@@ -36,17 +36,17 @@ def tokenize_for_bleu_java(code):
     code = code.replace('\'', '`')  # quote
     return code
 
-def tokenize_for_bleu_eval_sql(code):
-    code = re.sub(r'([^A-Za-z0-9])', r' \1 ', code)
-    code = re.sub(r'([a-z])([A-Z])', r'\1 \2', code)
-    code = re.sub(r'([0-9])([A-Z])', r'\1 \2', code)
-    code = code.replace('"', '')
-    code = code.replace('\'', '')
-    code = code.replace(";", '')
-    code = re.sub(r'\s+', ' ', code)
-    code = code.lower()
-    tokens = [t for t in code.split(' ') if t]
-    return tokens
+# def tokenize_for_bleu_eval_sql(code):
+#     code = re.sub(r'([^A-Za-z0-9])', r' \1 ', code)
+#     code = re.sub(r'([a-z])([A-Z])', r'\1 \2', code)
+#     code = re.sub(r'([0-9])([A-Z])', r'\1 \2', code)
+#     code = code.replace('"', '')
+#     code = code.replace('\'', '')
+#     code = code.replace(";", '')
+#     code = re.sub(r'\s+', ' ', code)
+#     code = code.lower()
+#     tokens = [t for t in code.split(' ') if t]
+#     return tokens
 
 def remove_s(string):
     string = re.sub(r'( _ _ )([a-z]+)( _ _ )', r'__\2__', string)
@@ -97,8 +97,10 @@ def compute_bleu(translation_corpus, dataset_object, section, args, max_order=4,
             reference = tokenize_for_bleu_java(reference)
             translation = tokenize_for_bleu_java(translation)
         else:
-            reference = tokenize_for_bleu_eval_sql(reference)
-            translation = tokenize_for_bleu_eval_sql(translation)
+            pass
+        # else:
+        #     reference = tokenize_for_bleu_eval_sql(reference)
+        #     translation = tokenize_for_bleu_eval_sql(translation)
         references = [reference]
         bleu_sentence += nltk.translate.bleu_score.sentence_bleu(references,
                                                                  translation,
