@@ -49,7 +49,7 @@ def beam_search(args, model, data, prediction_length=140):
     else:
         SEP = 102
     with torch.cuda.amp.autocast():
-        encoder_outputs = model(data,target_input=None,non_context_update=False,return_encoder_output=True)
+        encoder_outputs = model(data,target_input=None,no_context_update=False,return_encoder_output=True)
     torch.cuda.empty_cache()
     for i in range(1,prediction_length):
         target_input = ({k:v[:,:i+1] for k,v in generated_seq.items()})

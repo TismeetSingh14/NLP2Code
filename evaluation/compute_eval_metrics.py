@@ -42,7 +42,7 @@ def compute_metric(translation_corpus, dataset_name, split, tokenizer = None, se
         tokenized_source = tokenizer.encode(reference,padding=True,truncation=True,return_tensors='pt')[0]
         if isinstance(translation,dict):
             if is_equal(translation['token'],tokenized_source.to('cuda')):
-                exac_match_acc += 1
+                exact_match_acc += 1
             else:
                 mistakes.append((index,translation['str']))
             translation = translation['str']
