@@ -17,6 +17,7 @@ from utils import generate_model_name
 from torch.nn.utils.rnn import pad_sequence
 from data_preprocessing.django import Django
 from data_preprocessing.conala import Conala
+import pandas as pd
 
 dataset_classes = {'django':Django,
                    'conala':Conala,
@@ -222,7 +223,12 @@ def train(args):
                 if search == 'beam':
                     print('{} {} oracle accuracy'.format(split, search), metrics['exact_oracle_match'])
                 print('{} {} bleu score'.format(split, search), metrics['bleu'])
-                print("{} {} exececution accuracy".format(split, search), metrics['exec_acc'])
+                print("{} {} execution accuracy".format(split, search), metrics['exec_acc'])
+                # print('-----------------------------Final Result---------------------------')
+                # print(metrics['final_ans'])
+                d = pd.DataFrame(metrics['final_ans'])
+                d.to_csv('FinalResult.csv', index = False)
+
     writer.close()
 
 if __name__ == '__main__':

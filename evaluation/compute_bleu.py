@@ -79,6 +79,7 @@ def compute_bleu(translation_corpus, dataset_object, section, args, max_order=4,
     reference_length = 0
     translation_length = 0
     bleu_sentence = 0
+    ans_dict = {}
 
     for index in section:
         translation = translation_corpus[index]
@@ -86,7 +87,7 @@ def compute_bleu(translation_corpus, dataset_object, section, args, max_order=4,
             reference = ' '.join(dataset_object[index]['intent']['words'])
         else:
             reference = dataset_object[index]['snippet']
-
+        ans_dict[index] = {"Intent":' '.join(dataset_object[index]['intent']['gloss']),"OC": reference,"PC":translation}
         if args.python is True and args.translate_backward is False:
             slot_map = dataset_object[index]['slot_map']
             ref = Conala.decanonicalize_code(reference, slot_map)
@@ -148,4 +149,4 @@ def compute_bleu(translation_corpus, dataset_object, section, args, max_order=4,
             bp = math.exp(1-1./ratio)
     
     bleu = geo_mean*bp
-    return bleu, bleu_sentence/len(section)
+    return bleu, bleu_sentence/len(section), ans_dict
